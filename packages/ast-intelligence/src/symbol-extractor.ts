@@ -101,12 +101,67 @@ const RUST_PATTERNS: RxPattern[] = [
     isExported: (m) => m[1] !== undefined },
 ];
 
+const RUBY_PATTERNS: RxPattern[] = [
+  { rx: /^def\s+(\w+)\s*(\([^)]*\))?/gm, kind: "function", nameIdx: 1, sigIdx: 2 },
+  { rx: /^class\s+(\w+)/gm, kind: "class", nameIdx: 1 },
+];
+
+const PHP_PATTERNS: RxPattern[] = [
+  { rx: /^(?:(?:public|private|protected|static|final)\s+)*function\s+(\w+)\s*(\([^)]*\))/gm, kind: "function", nameIdx: 1, sigIdx: 2 },
+  { rx: /^(?:(?:abstract|final)\s+)?class\s+(\w+)/gm, kind: "class", nameIdx: 1 },
+  { rx: /^interface\s+(\w+)/gm, kind: "interface", nameIdx: 1 },
+];
+
+const CSHARP_PATTERNS: RxPattern[] = [
+  { rx: /^(?:(?:public|private|protected|internal|static|async|virtual|override|new|sealed)\s+)*(?:[\w<>\[\]]+\s+)(\w+)\s*(\([^)]*\))\s*(?:\{|=>)/gm, kind: "method", nameIdx: 1, sigIdx: 2 },
+  { rx: /^(?:(?:public|private|protected|internal|static|sealed|abstract)\s+)*class\s+(\w+)/gm, kind: "class", nameIdx: 1 },
+  { rx: /^(?:(?:public|private|protected|internal)\s+)*interface\s+(\w+)/gm, kind: "interface", nameIdx: 1 },
+];
+
+const SWIFT_PATTERNS: RxPattern[] = [
+  { rx: /^(?:(?:public|private|fileprivate|internal|open)\s+)*(?:mutating\s+)?func\s+(\w+)\s*(\([^)]*\))/gm, kind: "function", nameIdx: 1, sigIdx: 2 },
+  { rx: /^(?:(?:public|private|fileprivate|internal|open)\s+)*class\s+(\w+)/gm, kind: "class", nameIdx: 1 },
+  { rx: /^(?:(?:public|private|fileprivate|internal)\s+)*struct\s+(\w+)/gm, kind: "class", nameIdx: 1 },
+  { rx: /^(?:(?:public|private|fileprivate|internal)\s+)*protocol\s+(\w+)/gm, kind: "interface", nameIdx: 1 },
+];
+
+const DART_PATTERNS: RxPattern[] = [
+  { rx: /^(?:(?:public|private|protected|static|abstract)\s+)*(?:[\w<>]+\s+)?(\w+)\s*(\([^)]*\))\s*(?:\{|=>)/gm, kind: "function", nameIdx: 1, sigIdx: 2 },
+  { rx: /^(?:abstract\s+)?class\s+(\w+)/gm, kind: "class", nameIdx: 1 },
+];
+
+const KOTLIN_PATTERNS: RxPattern[] = [
+  { rx: /^(?:(?:public|private|protected|internal|open|override|abstract|suspend)\s+)*fun\s+(\w+)\s*(\([^)]*\))/gm, kind: "function", nameIdx: 1, sigIdx: 2 },
+  { rx: /^(?:(?:public|private|protected|internal|open|data|sealed|abstract)\s+)*class\s+(\w+)/gm, kind: "class", nameIdx: 1 },
+  { rx: /^(?:(?:public|private|protected|internal)\s+)*interface\s+(\w+)/gm, kind: "interface", nameIdx: 1 },
+];
+
+const SCALA_PATTERNS: RxPattern[] = [
+  { rx: /^(?:(?:private|protected|override|abstract|final)\s+)*def\s+(\w+)(?:\[.*?\])?\s*(\([^)]*\))/gm, kind: "function", nameIdx: 1, sigIdx: 2 },
+  { rx: /^(?:(?:case|abstract|final)\s+)?class\s+(\w+)/gm, kind: "class", nameIdx: 1 },
+  { rx: /^trait\s+(\w+)/gm, kind: "interface", nameIdx: 1 },
+];
+
+const JAVA_PATTERNS: RxPattern[] = [
+  { rx: /^(?:(?:public|private|protected|static|final|abstract|synchronized|native|strictfp)\s+)*(?:[\w<>\[\]]+\s+)(\w+)\s*(\([^)]*\))\s*(?:throws\s+[\w\s,]+)?\s*\{/gm, kind: "method", nameIdx: 1, sigIdx: 2 },
+  { rx: /^(?:(?:public|private|protected|static|final|abstract)\s+)*class\s+(\w+)/gm, kind: "class", nameIdx: 1 },
+  { rx: /^(?:(?:public|private|protected|abstract)\s+)*interface\s+(\w+)/gm, kind: "interface", nameIdx: 1 },
+];
+
 function langPatterns(lang: string): RxPattern[] {
   const l = lang.toLowerCase();
   if (["typescript","javascript","tsx","jsx"].includes(l)) return TS_PATTERNS;
   if (l === "python") return PY_PATTERNS;
   if (l === "go") return GO_PATTERNS;
   if (l === "rust") return RUST_PATTERNS;
+  if (["ruby", "rb"].includes(l)) return RUBY_PATTERNS;
+  if (l === "php") return PHP_PATTERNS;
+  if (["csharp", "cs"].includes(l)) return CSHARP_PATTERNS;
+  if (l === "swift") return SWIFT_PATTERNS;
+  if (l === "dart") return DART_PATTERNS;
+  if (["kotlin", "kt"].includes(l)) return KOTLIN_PATTERNS;
+  if (l === "scala") return SCALA_PATTERNS;
+  if (l === "java") return JAVA_PATTERNS;
   return TS_PATTERNS;
 }
 
@@ -354,6 +409,7 @@ export function detectLanguage(filePath: string): string | null {
     py: "python", go: "go", rs: "rust", java: "java",
     c: "c", h: "c", cpp: "cpp", cc: "cpp", hpp: "cpp",
     cs: "csharp", rb: "ruby", php: "php", swift: "swift", kt: "kotlin",
+    dart: "dart", scala: "scala",
   };
   return (ext && map[ext]) ?? null;
 }
